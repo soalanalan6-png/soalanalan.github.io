@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>积分管理系统</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+
+        .section-title {
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4CAF50;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        button {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+            transform: translateY(-2px);
+        }
+
+        .admin-btn {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+        }
+
+        .admin-btn:hover {
+            background: linear-gradient(135deg, #F57C00 0%, #EF6C00 100%);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #4CAF50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        .user-info {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 6px;
+            margin: 10px 0;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .admin-role {
+            background: #ffc107;
+            color: #856404;
+        }
+
+        .user-role {
+            background: #17a2b8;
+            color: #fff;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+
+        .logout-btn:hover {
+            background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>积分管理系统</h1>
+        </div>
+        
+        <div class="content">
+            <!-- 认证区域 -->
+            <div id="auth-section">
+                <div class="section">
+                    <h2 class="section-title">用户登录</h2>
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label class="form-label" for="username">用户名:</label>
+                            <input type="text" id="username" placeholder="请输入用户名" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="password">密码:</label>
+                            <input type="password" id="password" placeholder="请输入密码" required>
+                        </div>
+                        
+                        <button type="submit">登录</button>
+                    </form>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">创建账户</h2>
+                    <form id="register-form">
+                        <div class="form-group">
+                            <label class="form-label" for="new-username">用户名:</label>
+                            <input type="text" id="new-username" placeholder="请输入新用户名" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="new-password">密码:</label>
+                            <input type="password" id="new-password" placeholder="请输入密码" required>
+                        </div>
+                        
+                        <button type="submit">创建账户</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 用户操作区域 -->
+            <div id="user-section" class="hidden">
+                <div class="user-info">
+                    <h2>欢迎, <span id="current-user"></span> <span id="user-role"></span></h2>
+                    <p>当前积分: <strong><span id="current-points">0</span></strong></p>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">积分转让</h2>
+                    <form id="transfer-form">
+                        <div class="form-group">
+                            <label class="form-label" for="target-user">接收用户:</label>
+                            <select id="target-user" required>
+                                <option value="">请选择接收用户</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="transfer-amount">转让积分:</label>
+                            <input type="number" id="transfer-amount" min="1" placeholder="请输入转让积分数量" required>
+                        </div>
+                        
+                        <button type="submit">转让积分</button>
+                    </form>
+                </div>
+
+                <div class="form-group">
+                    <button id="logout-btn" class="logout-btn">退出登录</button>
+                </div>
+            </div>
+
+            <!-- 管理员区域 -->
+            <div id="admin-section" class="hidden">
+                <div class="section">
+                    <h2 class="section-title">管理员面板</h2>
+                    <form id="modify-points-form">
+                        <div class="form-group">
+                            <label class="form-label" for="admin-target-user">用户:</label>
+                            <select id="admin-target-user" required>
+                                <option value="">请选择用户</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="points-change">积分变更 (正数增加，负数减少):</label>
+                            <input type="number" id="points-change" placeholder="输入积分变更值" required>
+                        </div>
+                        
+                        <button type="submit" class="admin-btn">修改积分</button>
+                    </form>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">所有用户列表</h2>
+                    <table id="users-table">
+                        <thead>
+                            <tr>
+                                <th>用户名</th>
+                                <th>积分</th>
+                                <th>角色</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="message-container"></div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟数据库存储（实际应用中应使用服务器端存储）
+        let users = [
+            { username: 'admin', password: 'admin123', points: 0, isAdmin: true },
+            { username: 'user1', password: 'pass1', points: 100, isAdmin: false },
+            { username: 'user2', password: 'pass2', points: 50, isAdmin: false }
+        ];
+
+        // 当前登录用户
+        let currentUser = null;
+
+        // DOM元素
+        const authSection = document.getElementById('auth-section');
+        const userSection = document.getElementById('user-section');
+        const adminSection = document.getElementById('admin-section');
+        const currentUserSpan = document.getElementById('current-user');
+        const userRoleSpan = document.getElementById('user-role');
+        const currentPointsSpan = document.getElementById('current-points');
+        const targetUserSelect = document.getElementById('target-user');
+        const adminTargetUserSelect = document.getElementById('admin-target-user');
+        const usersTableBody = document.getElementById('users-table-body');
+        const messageContainer = document.getElementById('message-container');
+
+        // 显示消息
+        function showMessage(text, type = 'success') {
+            messageContainer.innerHTML = `<div class="message ${type}">${text}</div>`;
+            setTimeout(() => {
+                messageContainer.innerHTML = '';
+            }, 3000);
+        }
+
+        // 更新用户下拉列表
+        function updateUsersDropdown() {
+            if (!targetUserSelect || !adminTargetUserSelect) return;
+            
+            // 清空现有选项（保留提示选项）
+            targetUserSelect.innerHTML = '<option value="">请选择接收用户</option>';
+            adminTargetUserSelect.innerHTML = '<option value="">请选择用户</option>';
+
+            // 添加非管理员用户到普通转让下拉框
+            users.forEach(user => {
+                if (user && !user.isAdmin && currentUser && user.username !== currentUser.username) {
+                    const option = document.createElement('option');
+                    option.value = user.username;
+                    option.textContent = `${user.username} (${user.points} 积分)`;
+                    targetUserSelect.appendChild(option);
+                }
+            });
+
+            // 添加所有用户到管理员下拉框
+            users.forEach(user => {
+                if (user) {
+                    const option = document.createElement('option');
+                    option.value = user.username;
+                    option.textContent = `${user.username} (${user.points} 积分)`;
+                    adminTargetUserSelect.appendChild(option);
+                }
+            });
+        }
+
+        // 更新用户表格
+        function updateUsersTable() {
+            if (!usersTableBody) return;
+            
+            usersTableBody.innerHTML = '';
+            
+            users.forEach(user => {
+                if (!user) return; // 防止null用户
+                
+                const row = document.createElement('tr');
+                
+                const nameCell = document.createElement('td');
+                nameCell.textContent = user.username;
+                
+                const pointsCell = document.createElement('td');
+                pointsCell.textContent = user.points;
+                
+                const roleCell = document.createElement('td');
+                const roleBadge = document.createElement('span');
+                roleBadge.className = `role-badge ${user.isAdmin ? 'admin-role' : 'user-role'}`;
+                roleBadge.textContent = user.isAdmin ? '管理员' : '普通用户';
+                roleCell.appendChild(roleBadge);
+                
+                row.appendChild(nameCell);
+                row.appendChild(pointsCell);
+                row.appendChild(roleCell);
+                usersTableBody.appendChild(row);
+            });
+        }
+
+        // 登录处理
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                showMessage('请输入用户名和密码', 'error');
+                return;
+            }
+            
+            const user = users.find(u => u && u.username === username && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                currentUserSpan.textContent = user.username;
+                userRoleSpan.innerHTML = `<span class="role-badge ${user.isAdmin ? 'admin-role' : 'user-role'}">${user.isAdmin ? '管理员' : '普通用户'}</span>`;
+                currentPointsSpan.textContent = user.points;
+                
+                authSection.classList.add('hidden');
+                userSection.classList.remove('hidden');
+                
+                if (user.isAdmin) {
+                    adminSection.classList.remove('hidden');
+                }
+                
+                updateUsersDropdown();
+                updateUsersTable();
+                
+                showMessage(`登录成功！欢迎 ${user.username}`);
+            } else {
+                showMessage('用户名或密码错误', 'error');
+            }
+        });
+
+        // 注册处理
+        document.getElementById('register-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newUsername = document.getElementById('new-username').value.trim();
+            const newPassword = document.getElementById('new-password').value;
+            
+            if (!newUsername || !newPassword) {
+                showMessage('请输入用户名和密码', 'error');
+                return;
+            }
+            
+            // 检查用户名是否已存在
+            if (users.some(u => u && u.username === newUsername)) {
+                showMessage('用户名已存在', 'error');
+                return;
+            }
+            
+            // 创建新用户
+            users.push({
+                username: newUsername,
+                password: newPassword,
+                points: 50, // 新用户初始积分
+                isAdmin: false
+            });
+            
+            showMessage('账户创建成功！初始积分为50', 'success');
+            
+            // 清空表单
+            document.getElementById('new-username').value = '';
+            document.getElementById('new-password').value = '';
+        });
+
+        // 退出登录
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            currentUser = null;
+            authSection.classList.remove('hidden');
+            userSection.classList.add('hidden');
+            adminSection.classList.add('hidden');
+            
+            // 清空表单
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            
+            showMessage('已退出登录');
+        });
+
+        // 积分转让处理
+        document.getElementById('transfer-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                showMessage('请先登录', 'error');
+                return;
+            }
+            
+            const targetUsername = document.getElementById('target-user').value;
+            const amountStr = document.getElementById('transfer-amount').value;
+            
+            if (!targetUsername) {
+                showMessage('请选择接收用户', 'error');
+                return;
+            }
+            
+            const amount = parseInt(amountStr);
+            
+            if (isNaN(amount) || amount <= 0) {
+                showMessage('转让积分必须大于0', 'error');
+                return;
+            }
+            
+            if (amount > currentUser.points) {
+                showMessage('积分不足', 'error');
+                return;
+            }
+            
+            const targetUser = users.find(u => u && u.username === targetUsername);
+            if (!targetUser) {
+                showMessage('目标用户不存在', 'error');
+                return;
+            }
+            
+            // 执行转让
+            currentUser.points -= amount;
+            targetUser.points += amount;
+            
+            // 更新界面
+            currentPointsSpan.textContent = currentUser.points;
+            updateUsersDropdown();
+            updateUsersTable();
+            
+            showMessage(`成功向 ${targetUsername} 转让 ${amount} 积分`);
+            
+            // 清空表单
+            document.getElementById('transfer-amount').value = '';
+        });
+
+        // 管理员修改积分处理
+        document.getElementById('modify-points-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!currentUser || !currentUser.isAdmin) {
+                showMessage('权限不足', 'error');
+                return;
+            }
+            
+            const targetUsername = document.getElementById('admin-target-user').value;
+            const changeAmountStr = document.getElementById('points-change').value;
+            
+            if (!targetUsername) {
+                showMessage('请选择用户', 'error');
+                return;
+            }
+            
+            const changeAmount = parseInt(changeAmountStr);
+            
+            if (isNaN(changeAmount)) {
+                showMessage('请输入有效的积分变更值', 'error');
+                return;
+            }
+            
+            const targetUser = users.find(u => u && u.username === targetUsername);
+            if (!targetUser) {
+                showMessage('目标用户不存在', 'error');
+                return;
+            }
+            
+            // 修改积分（允许负数）
+            targetUser.points += changeAmount;
+            
+            // 如果是当前用户修改自己的积分，也要更新界面显示
+            if (targetUser.username === currentUser.username) {
+                currentPointsSpan.textContent = targetUser.points;
+            }
+            
+            updateUsersDropdown();
+            updateUsersTable();
+            
+            showMessage(`已为 ${targetUsername} ${changeAmount >= 0 ? '增加' : '减少'} ${Math.abs(changeAmount)} 积分`);
+            
+            // 清空表单
+            document.getElementById('points-change').value = '';
+        });
+
+        // 初始化下拉列表和表格
+        updateUsersDropdown();
+        updateUsersTable();
+    </script>
+</body>
+</html>
